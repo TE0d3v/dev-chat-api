@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 })
 
 io.on("connection", (socket) => {
-    console.log("um novo user conectou") 
+    console.log("um novo user conectou")
 
     socket.on("registerUser", (username) => {
         users.push({ id: socket.id, username })
@@ -30,10 +30,12 @@ io.on("connection", (socket) => {
         io.emit("newMessage", { username: data.username, message: data.message })
     })
 
-//desconectar user
-    socket.on("disconnect", () => {
-        console.log("user desconectou")
-    })
+    //desconectar user
+    socket.on("disconnected", () => {
+        console.log("um usuario foi desconectado", socket.id) 
+        const username = users.find(u => u.id === socket.id)?.username;
+        io.emit("userDisconnected", username)
+    });
 });
 
 
